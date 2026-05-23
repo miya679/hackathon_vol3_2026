@@ -1,11 +1,34 @@
-function App() {
-  const apiUrl = process.env.REACT_APP_API_URL ?? "http://localhost:5000";
+import {
+  BrowserRouter,
+  Navigate,
+  NavLink,
+  Route,
+  Routes,
+} from "react-router-dom";
+import ProgressRecordPage from "./pages/ProgressRecordPage";
+import "./App.css";
 
+function App() {
   return (
-    <main style={{ fontFamily: "sans-serif", padding: "2rem" }}>
-      <h1>React + Flask + Firebase</h1>
-      <p>API: {apiUrl}</p>
-    </main>
+    <BrowserRouter>
+      <div className="app">
+        <nav className="app-nav">
+          <span className="app-nav__brand">学習進捗管理</span>
+          <NavLink
+            to="/progress/record"
+            className={({ isActive }) =>
+              `app-nav__link${isActive ? " app-nav__link--active" : ""}`
+            }
+          >
+            進捗記録
+          </NavLink>
+        </nav>
+        <Routes>
+          <Route path="/" element={<Navigate to="/progress/record" replace />} />
+          <Route path="/progress/record" element={<ProgressRecordPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
