@@ -1,5 +1,6 @@
-// firebaseにデータ送信できるかのテスト用画面です
+import ProgressDisplay from "./progress_display";
 
+// firebaseにデータ送信できるかのテスト用画面です
 import { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
@@ -23,6 +24,7 @@ function App() {
   };
 
   return (
+    <ProgressDisplay />;
     <main style={{ fontFamily: "sans-serif", padding: "2rem" }}>
       <h1>React + Flask + Firebase</h1>
 
