@@ -14,12 +14,9 @@ export default function MaterialRegistration() {
 
     // 登録するデータオブジェクト
     const registrationData = {
-      materialId: crypto.randomUUID(),
-      name: materialTitle,
-      type: materialType,
-      startPage: materialType === 'video' ? null : Number(startPage),
-      endPage: materialType === 'video' ? null : Number(endPage),
-      registeredAt: new Date().toISOString(),
+      text_name: materialTitle,
+      text_type: materialType,
+      text_range: materialType === 'video' ? null : `${startPage}-${endPage}`
     };
 
     if(Number(startPage) > Number(endPage)){
