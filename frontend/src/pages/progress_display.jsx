@@ -33,7 +33,7 @@ const Wrapper = styled.div`
 
 const ProgressGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 500px));
   gap: 1rem;
   padding: 1rem;
   background-color: var(--color-bg);
