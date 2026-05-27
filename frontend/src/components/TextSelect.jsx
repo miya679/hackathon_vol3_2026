@@ -1,10 +1,4 @@
-function MaterialSelect({
-  materials,
-  value,
-  onChange,
-  disabled,
-  loading,
-}) {
+function TextSelect({ texts, value, onChange, disabled, loading }) {
   if (loading) {
     return (
       <select className="form-select" disabled>
@@ -13,17 +7,18 @@ function MaterialSelect({
     );
   }
 
-  if (materials.length === 0) {
+  if (texts.length === 0) {
     return (
       <div className="form-hint form-hint--warning">
-        登録された教材がありません。教材登録画面で教材を追加してください。
+        登録された教材（texts）がありません。教材登録画面で追加するか、Firestore
+        Console から texts コレクションにデータを追加してください。
       </div>
     );
   }
 
   return (
     <select
-      id="material"
+      id="text"
       className="form-select"
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -31,13 +26,13 @@ function MaterialSelect({
       required
     >
       <option value="">教材を選択してください</option>
-      {materials.map((material) => (
-        <option key={material.id} value={material.id}>
-          {material.title}
+      {texts.map((text) => (
+        <option key={text.id} value={text.id}>
+          {text.text_name}
         </option>
       ))}
     </select>
   );
 }
 
-export default MaterialSelect;
+export default TextSelect;

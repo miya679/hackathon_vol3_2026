@@ -6,6 +6,7 @@ import {
   Routes,
 } from "react-router-dom";
 import ProgressRecordPage from "./pages/ProgressRecordPage";
+import { firebaseMode } from "./lib/firebase";
 import "./App.css";
 
 function App() {
@@ -14,6 +15,11 @@ function App() {
       <div className="app">
         <nav className="app-nav">
           <span className="app-nav__brand">学習進捗管理</span>
+          {process.env.NODE_ENV === "development" && (
+            <span className="app-nav__mode" title="Firebase 接続先">
+              {firebaseMode === "emulator" ? "Emulator" : "Cloud"}
+            </span>
+          )}
           <NavLink
             to="/progress/record"
             className={({ isActive }) =>

@@ -1,25 +1,19 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
-const PROGRESS_COLLECTION = "progressRecords";
+const PROGRESSES_COLLECTION = "progresses";
 
 /**
  * @param {{
- *   materialId: string;
- *   materialTitle: string;
- *   progressPercent: number;
- *   note: string;
- *   recordedAt: string;
+ *   textId: string;
+ *   progressPage: number;
  * }} data
  */
-export async function createProgressRecord(data) {
-  const docRef = await addDoc(collection(db, PROGRESS_COLLECTION), {
-    materialId: data.materialId,
-    materialTitle: data.materialTitle,
-    progressPercent: data.progressPercent,
-    note: data.note.trim(),
-    recordedAt: data.recordedAt,
-    createdAt: serverTimestamp(),
+export async function createProgress(data) {
+  const docRef = await addDoc(collection(db, PROGRESSES_COLLECTION), {
+    text_id: data.textId,
+    progress_page: data.progressPage,
+    updated_at: serverTimestamp(),
   });
   return docRef.id;
 }

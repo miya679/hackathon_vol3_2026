@@ -1,100 +1,97 @@
-import MaterialSelect from "./MaterialSelect";
+import TextSelect from "./TextSelect";
+import { parseTextRange, progressPercent } from "../utils/textRange";
 
 function ProgressForm({
-  materials,
-  materialsLoading,
-  materialId,
-  onMaterialChange,
-  progressPercent,
-  onProgressChange,
-  note,
-  onNoteChange,
-  recordedAt,
-  onRecordedAtChange,
+  texts,
+  textsLoading,
+  textId,
+  onTextChange,
+  progressPage,
+  onProgressPageChange,
+  pageError,
   onSubmit,
   submitting,
   submitError,
   submitSuccess,
 }) {
-  const selectedMaterial = materials.find((m) => m.id === materialId);
+  const selectedText = texts.find((t) => t.id === textId);
+  const range = selectedText
+    ? parseTextRange(selectedText.text_range)
+    : null;
+  const percent = range ? progressPercent(progressPage, range) : null;
+
+  const sliderMin = range?.start ?? 1;
+  const sliderMax = range?.end ?? Math.max(100, progressPage);
+  const sliderDisabled =
+    submitting || texts.length === 0 || !textId;
+
   const canSubmit =
     !submitting &&
-    materials.length > 0 &&
-    materialId &&
-    progressPercent >= 0 &&
-    progressPercent <= 100;
+    texts.length > 0 &&
+    textId &&
+    progressPage >= 1 &&
+    !pageError;
 
   return (
     <form className="progress-form" onSubmit={onSubmit} noValidate>
       <div className="form-group">
-        <label htmlFor="material" className="form-label">
+        <label htmlFor="text" className="form-label">
           教材 <span className="required">*</span>
         </label>
-        <MaterialSelect
-          materials={materials}
-          value={materialId}
-          onChange={onMaterialChange}
+        <TextSelect
+          texts={texts}
+          value={textId}
+          onChange={onTextChange}
           disabled={submitting}
-          loading={materialsLoading}
+          loading={textsLoading}
         />
-        {selectedMaterial?.description && (
-          <p className="form-hint">{selectedMaterial.description}</p>
+        {selectedText && (
+          <div className="form-hint">
+            {selectedText.text_type && (
+              <span>種別: {selectedText.text_type} / </span>
+            )}
+            {selectedText.text_range ? (
+              <span>ページ範囲: {selectedText.text_range}</span>
+            ) : (
+              <span>ページ範囲が未設定です（text_range）</span>
+            )}
+          </div>
         )}
       </div>
 
       <div className="form-group">
-        <label htmlFor="progress" className="form-label">
-          進捗 <span className="required">*</span>
-          <span className="progress-value">{progressPercent}%</span>
+        <label htmlFor="progressPage" className="form-label">
+          現在のページ <span className="required">*</span>
+          <span className="progress-value">
+            {progressPage} ページ
+            {percent !== null && `（${percent}%）`}
+          </span>
         </label>
         <input
-          id="progress"
+          id="progressPage"
           type="range"
           className="form-range"
-          min="0"
-          max="100"
-          step="5"
-          value={progressPercent}
-          onChange={(e) => onProgressChange(Number(e.target.value))}
-          disabled={submitting || materials.length === 0}
-        />
-        <div className="progress-labels">
-          <span>0%</span>
-          <span>50%</span>
-          <span>100%</span>
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="recordedAt" className="form-label">
-          記録日 <span className="required">*</span>
-        </label>
-        <input
-          id="recordedAt"
-          type="date"
-          className="form-input"
-          value={recordedAt}
-          onChange={(e) => onRecordedAtChange(e.target.value)}
-          disabled={submitting || materials.length === 0}
+          min={sliderMin}
+          max={sliderMax}
+          step={1}
+          value={Math.min(Math.max(progressPage, sliderMin), sliderMax)}
+          onChange={(e) => onProgressPageChange(Number(e.target.value))}
+          disabled={sliderDisabled}
           required
         />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="note" className="form-label">
-          メモ
-        </label>
-        <textarea
-          id="note"
-          className="form-textarea"
-          rows={4}
-          placeholder="学習内容や気づきを記録できます（任意）"
-          value={note}
-          onChange={(e) => onNoteChange(e.target.value)}
-          disabled={submitting || materials.length === 0}
-          maxLength={500}
-        />
-        <p className="form-hint">{note.length} / 500 文字</p>
+        <div className="progress-labels">
+          <span>{sliderMin} ページ</span>
+          {range && <span>中間</span>}
+          <span>{sliderMax} ページ</span>
+        </div>
+        {pageError && (
+          <p className="form-hint form-hint--error">{pageError}</p>
+        )}
+        {!pageError && !range && textId && (
+          <p className="form-hint">
+            text_range（例: 1-120）を設定すると、教材のページ範囲に合わせてスライダーが固定されます
+          </p>
+        )}
       </div>
 
       {submitError && (

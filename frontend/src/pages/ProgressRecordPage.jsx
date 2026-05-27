@@ -1,74 +1,89 @@
 import { useCallback, useEffect, useState } from "react";
 import ProgressForm from "../components/ProgressForm";
-import { fetchMaterials } from "../services/materialService";
-import { createProgressRecord } from "../services/progressService";
-
-function todayString() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+import { createProgress } from "../services/progressService";
+import { fetchTexts } from "../services/textService";
+import {
+  parseTextRange,
+  validateProgressPage,
+} from "../utils/textRange";
 
 function ProgressRecordPage() {
-  const [materials, setMaterials] = useState([]);
-  const [materialsLoading, setMaterialsLoading] = useState(true);
-  const [materialsError, setMaterialsError] = useState(null);
+  const [texts, setTexts] = useState([]);
+  const [textsLoading, setTextsLoading] = useState(true);
+  const [textsError, setTextsError] = useState(null);
 
-  const [materialId, setMaterialId] = useState("");
-  const [progressPercent, setProgressPercent] = useState(0);
-  const [note, setNote] = useState("");
-  const [recordedAt, setRecordedAt] = useState(todayString());
+  const [textId, setTextId] = useState("");
+  const [progressPage, setProgressPage] = useState(1);
+  const [pageError, setPageError] = useState(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  const loadMaterials = useCallback(async () => {
-    setMaterialsLoading(true);
-    setMaterialsError(null);
+  const loadTexts = useCallback(async () => {
+    setTextsLoading(true);
+    setTextsError(null);
     try {
-      const list = await fetchMaterials();
-      setMaterials(list);
+      const list = await fetchTexts();
+      setTexts(list);
     } catch (err) {
-      setMaterialsError(
+      setTextsError(
         err instanceof Error ? err.message : "教材の取得に失敗しました"
       );
     } finally {
-      setMaterialsLoading(false);
+      setTextsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadMaterials();
-  }, [loadMaterials]);
+    loadTexts();
+  }, [loadTexts]);
+
+  useEffect(() => {
+    const selected = texts.find((t) => t.id === textId);
+    if (!selected) {
+      setPageError(null);
+      return;
+    }
+    const range = parseTextRange(selected.text_range);
+    setPageError(validateProgressPage(progressPage, range));
+  }, [textId, progressPage, texts]);
+
+  const handleTextChange = (id) => {
+    setTextId(id);
+    const selected = texts.find((t) => t.id === id);
+    const range = selected ? parseTextRange(selected.text_range) : null;
+    setProgressPage(range?.start ?? 1);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError(null);
     setSubmitSuccess(false);
 
-    const selected = materials.find((m) => m.id === materialId);
+    const selected = texts.find((t) => t.id === textId);
     if (!selected) {
       setSubmitError("教材を選択してください");
       return;
     }
 
+    const range = parseTextRange(selected.text_range);
+    const validation = validateProgressPage(progressPage, range);
+    if (validation) {
+      setPageError(validation);
+      return;
+    }
+
     setSubmitting(true);
     try {
-      await createProgressRecord({
-        materialId: selected.id,
-        materialTitle: selected.title,
-        progressPercent,
-        note,
-        recordedAt,
+      await createProgress({
+        textId: selected.id,
+        progressPage,
       });
       setSubmitSuccess(true);
-      setProgressPercent(0);
-      setNote("");
-      setRecordedAt(todayString());
-      setMaterialId("");
+      setTextId("");
+      setProgressPage(1);
+      setPageError(null);
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : "保存に失敗しました"
@@ -83,18 +98,14 @@ function ProgressRecordPage() {
       <header className="page-header">
         <h1 className="page-title">進捗記録</h1>
         <p className="page-description">
-          学習した教材の進捗を記録します。進捗表示画面で一覧・グラフとして確認できます。
+          学習中のページ番号を記録します。
         </p>
       </header>
 
-      {materialsError && (
+      {textsError && (
         <div className="alert alert--error" role="alert">
-          {materialsError}
-          <button
-            type="button"
-            className="btn btn--text"
-            onClick={loadMaterials}
-          >
+          {textsError}
+          <button type="button" className="btn btn--text" onClick={loadTexts}>
             再読み込み
           </button>
         </div>
@@ -102,16 +113,13 @@ function ProgressRecordPage() {
 
       <section className="card">
         <ProgressForm
-          materials={materials}
-          materialsLoading={materialsLoading}
-          materialId={materialId}
-          onMaterialChange={setMaterialId}
-          progressPercent={progressPercent}
-          onProgressChange={setProgressPercent}
-          note={note}
-          onNoteChange={setNote}
-          recordedAt={recordedAt}
-          onRecordedAtChange={setRecordedAt}
+          texts={texts}
+          textsLoading={textsLoading}
+          textId={textId}
+          onTextChange={handleTextChange}
+          progressPage={progressPage}
+          onProgressPageChange={setProgressPage}
+          pageError={pageError}
           onSubmit={handleSubmit}
           submitting={submitting}
           submitError={submitError}

@@ -46,6 +46,15 @@ body {
   font-size: 1.1rem;
 }
 
+.app-nav__mode {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
 .app-nav__link {
   color: var(--color-text-muted);
   text-decoration: none;
@@ -163,6 +172,10 @@ body {
   margin: 0;
   font-size: 0.85rem;
   color: var(--color-text-muted);
+}
+
+.form-hint--error {
+  color: var(--color-error, #c62828);
 }
 
 .form-hint--warning {
