@@ -37,7 +37,7 @@ const STextName = styled.h2`
 
 const SProgressBarContainer = styled.div`
   width: 100%;
-  height: 20px;
+  height: 10px;
   background-color: var(--color-bg);
   border-radius: 10px;
   margin-top: 1rem;
