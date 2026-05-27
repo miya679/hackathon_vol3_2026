@@ -1,49 +1,40 @@
-import ProgressDisplay from "./progress_display";
-
-// firebaseにデータ送信できるかのテスト用画面です
-import { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import {
+  BrowserRouter,
+  Navigate,
+  NavLink,
+  Route,
+  Routes,
+} from "react-router-dom";
+import ProgressRecordPage from "./pages/ProgressRecordPage";
+import { firebaseMode } from "./lib/firebase";
+import "./App.css";
 
 function App() {
-  const apiUrl = process.env.REACT_APP_API_URL ?? "http://localhost:5000";
-
-  const [name, setName] = useState("");
-
-  const addUser = async () => {
-    try {
-      await addDoc(collection(db, "users"), {
-        name: name,
-        createdAt: new Date(),
-      });
-
-      alert("追加完了");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
-    <ProgressDisplay />;
-    <main style={{ fontFamily: "sans-serif", padding: "2rem" }}>
-      <h1>React + Flask + Firebase</h1>
-
-      <p>API: {apiUrl}</p>
-
-      <hr />
-
-      <h2>Firestore Test</h2>
-
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="名前"
-      />
-
-      <button onClick={addUser}>
-        Firestoreに追加
-      </button>
-    </main>
+    <BrowserRouter>
+      <div className="app">
+        <nav className="app-nav">
+          <span className="app-nav__brand">学習進捗管理</span>
+          {process.env.NODE_ENV === "development" && (
+            <span className="app-nav__mode" title="Firebase 接続先">
+              {firebaseMode === "emulator" ? "Emulator" : "Cloud"}
+            </span>
+          )}
+          <NavLink
+            to="/progress/record"
+            className={({ isActive }) =>
+              `app-nav__link${isActive ? " app-nav__link--active" : ""}`
+            }
+          >
+            進捗記録
+          </NavLink>
+        </nav>
+        <Routes>
+          <Route path="/" element={<Navigate to="/progress/record" replace />} />
+          <Route path="/progress/record" element={<ProgressRecordPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
