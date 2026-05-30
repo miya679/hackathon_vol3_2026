@@ -10,20 +10,21 @@ export default function MaterialRegistration() {
 
   // 送信処理 
   const handleSubmit = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     // 登録するデータオブジェクト
     const registrationData = {
       text_name: materialTitle,
       text_type: materialType,
-      text_range: materialType === 'video' ? null : `${startPage}-${endPage}`
+      start_page: materialType === 'video' ? 0 : Number(startPage),
+      end_page: materialType === 'video' ? 0 : Number(endPage)
     };
 
-    if(Number(startPage) > Number(endPage)){
+    if (Number(startPage) > Number(endPage)) {
       alert('開始ページは終了ページ以下の値を入力してください');
-    }else{
-    console.log('登録データ:', registrationData);
-    alert('教材を登録しました');
+    } else {
+      console.log('登録データ:', registrationData);
+      alert('教材を登録しました');
     }
 
     setMaterialTitle('');
@@ -100,8 +101,14 @@ export default function MaterialRegistration() {
           </div>
         )}
 
-        <button type="submit" className="button">
-          教材を登録
+        <button type="submit" className="button"
+          disabled={
+            !materialTitle ||
+            (
+              materialType !== 'video' &&
+              (!startPage || !endPage)
+            )
+          }>          教材を登録
         </button>
       </form>
     </div>
