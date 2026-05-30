@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createText } from "../services/textCreateService";
+// import { auth } from "../lib/firebase";(認証機能マージ後に追加)
 import './text_regist.css';
 
 export default function MaterialRegistration() {
@@ -9,23 +11,31 @@ export default function MaterialRegistration() {
   const [message, setMessage] = useState('');
 
   // 送信処理 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 登録するデータオブジェクト
     const registrationData = {
       text_name: materialTitle,
       text_type: materialType,
-      start_page: materialType === 'video' ? 0 : Number(startPage),
-      end_page: materialType === 'video' ? 0 : Number(endPage)
+      start_page: materialType === 'video' ? null : Number(startPage),
+      end_page: materialType === 'video' ? null : Number(endPage)
+      // user_id: auth.currentUser.uid(認証機能マージ後に追加),
     };
 
     if (Number(startPage) > Number(endPage)) {
       alert('開始ページは終了ページ以下の値を入力してください');
-    } else {
+      return;
+    }
+
+    try {
+      await createText(registrationData);
       console.log('登録データ:', registrationData);
       alert('教材を登録しました');
+    } catch (error) {
+      alert('登録に失敗しました');
     }
+
 
     setMaterialTitle('');
     setStartPage('');

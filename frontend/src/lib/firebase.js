@@ -55,3 +55,8 @@ if (useEmulator) {
 } else if (process.env.NODE_ENV === "development") {
   console.info("[Firebase] Cloud Firestore", { projectId });
 }
+
+console.log(
+  "PROJECT_ID:",
+  process.env.REACT_APP_FIREBASE_PROJECT_ID
+);
