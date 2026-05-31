@@ -3,9 +3,10 @@ import ProgressForm from "../components/ProgressForm";
 import { createProgress } from "../services/progressService";
 import { fetchTexts } from "../services/textService";
 import {
-  parseTextRange,
-  validateProgressPage,
-} from "../utils/textRange";
+  getTextPageBounds,
+  parseLabelInput,
+} from "../utils/pageStudy";
+import { validatePageRange } from "../utils/textRange";
 
 function ProgressRecordPage() {
   const [texts, setTexts] = useState([]);
@@ -13,8 +14,10 @@ function ProgressRecordPage() {
   const [textsError, setTextsError] = useState(null);
 
   const [textId, setTextId] = useState("");
-  const [progressPage, setProgressPage] = useState(1);
-  const [pageError, setPageError] = useState(null);
+  const [progressStartPage, setProgressStartPage] = useState(1);
+  const [progressEndPage, setProgressEndPage] = useState(1);
+  const [labelsInput, setLabelsInput] = useState("");
+  const [rangeError, setRangeError] = useState(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -42,18 +45,22 @@ function ProgressRecordPage() {
   useEffect(() => {
     const selected = texts.find((t) => t.id === textId);
     if (!selected) {
-      setPageError(null);
+      setRangeError(null);
       return;
     }
-    const range = parseTextRange(selected.text_range);
-    setPageError(validateProgressPage(progressPage, range));
-  }, [textId, progressPage, texts]);
+    const bounds = getTextPageBounds(selected);
+    setRangeError(
+      validatePageRange(progressStartPage, progressEndPage, bounds)
+    );
+  }, [textId, progressStartPage, progressEndPage, texts]);
 
   const handleTextChange = (id) => {
     setTextId(id);
     const selected = texts.find((t) => t.id === id);
-    const range = selected ? parseTextRange(selected.text_range) : null;
-    setProgressPage(range?.start ?? 1);
+    const bounds = selected ? getTextPageBounds(selected) : null;
+    const start = bounds?.start ?? 1;
+    setProgressStartPage(start);
+    setProgressEndPage(start);
   };
 
   const handleSubmit = async (e) => {
@@ -67,23 +74,33 @@ function ProgressRecordPage() {
       return;
     }
 
-    const range = parseTextRange(selected.text_range);
-    const validation = validateProgressPage(progressPage, range);
+    const bounds = getTextPageBounds(selected);
+    const validation = validatePageRange(
+      progressStartPage,
+      progressEndPage,
+      bounds
+    );
     if (validation) {
-      setPageError(validation);
+      setRangeError(validation);
       return;
     }
+
+    const labels = parseLabelInput(labelsInput);
 
     setSubmitting(true);
     try {
       await createProgress({
         textId: selected.id,
-        progressPage,
+        pageStart: progressStartPage,
+        pageEnd: progressEndPage,
+        labels,
       });
       setSubmitSuccess(true);
       setTextId("");
-      setProgressPage(1);
-      setPageError(null);
+      setProgressStartPage(1);
+      setProgressEndPage(1);
+      setLabelsInput("");
+      setRangeError(null);
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : "保存に失敗しました"
@@ -98,7 +115,7 @@ function ProgressRecordPage() {
       <header className="page-header">
         <h1 className="page-title">進捗記録</h1>
         <p className="page-description">
-          学習中のページ番号を記録します。
+          今日学習したページ範囲を記録します。
         </p>
       </header>
 
@@ -117,9 +134,13 @@ function ProgressRecordPage() {
           textsLoading={textsLoading}
           textId={textId}
           onTextChange={handleTextChange}
-          progressPage={progressPage}
-          onProgressPageChange={setProgressPage}
-          pageError={pageError}
+          progressStartPage={progressStartPage}
+          progressEndPage={progressEndPage}
+          onProgressStartPageChange={setProgressStartPage}
+          onProgressEndPageChange={setProgressEndPage}
+          labelsInput={labelsInput}
+          onLabelsChange={setLabelsInput}
+          rangeError={rangeError}
           onSubmit={handleSubmit}
           submitting={submitting}
           submitError={submitError}
