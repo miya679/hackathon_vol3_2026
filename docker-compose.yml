@@ -24,13 +24,21 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${WEB_PORT:-3000}:3000"
+    env_file:
+      - .env
     environment:
       HOST: 0.0.0.0
       WDS_SOCKET_PORT: 0
       REACT_APP_API_URL: http://localhost:${API_PORT:-5000}
-      REACT_APP_FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
-      REACT_APP_FIRESTORE_EMULATOR_HOST: localhost:8080
-      REACT_APP_USE_FIREBASE_EMULATOR: "true"
+      REACT_APP_USE_FIREBASE_EMULATOR: ${REACT_APP_USE_FIREBASE_EMULATOR:-true}
+      REACT_APP_FIREBASE_PROJECT_ID: ${REACT_APP_FIREBASE_PROJECT_ID:-demo-hakkason}
+      REACT_APP_FIREBASE_API_KEY: ${REACT_APP_FIREBASE_API_KEY:-demo-api-key}
+      REACT_APP_FIREBASE_AUTH_DOMAIN: ${REACT_APP_FIREBASE_AUTH_DOMAIN:-demo-hakkason.firebaseapp.com}
+      REACT_APP_FIREBASE_STORAGE_BUCKET: ${REACT_APP_FIREBASE_STORAGE_BUCKET:-demo-hakkason.appspot.com}
+      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${REACT_APP_FIREBASE_MESSAGING_SENDER_ID:-000000000000}
+      REACT_APP_FIREBASE_APP_ID: ${REACT_APP_FIREBASE_APP_ID:-1:000000000000:web:demo}
+      REACT_APP_FIREBASE_AUTH_EMULATOR_HOST: ${REACT_APP_FIREBASE_AUTH_EMULATOR_HOST:-localhost:9099}
+      REACT_APP_FIRESTORE_EMULATOR_HOST: ${REACT_APP_FIRESTORE_EMULATOR_HOST:-localhost:8080}
       CHOKIDAR_USEPOLLING: "true"
     volumes:
       - ./frontend:/app
@@ -44,9 +52,9 @@ services:
       context: ./firebase
       dockerfile: Dockerfile
     ports:
-      - "4000:4000" # Emulator Suite UI
-      - "8080:8080" # Firestore
-      - "9099:9099" # Authentication
+      - "4000:4000"   # Emulator Suite UI
+      - "8080:8080"   # Firestore
+      - "9099:9099"   # Authentication
     environment:
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-demo-hakkason}
     restart: unless-stopped
