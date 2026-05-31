@@ -18,7 +18,11 @@
 1. https://console.firebase.google.com/
 2. プロジェクトを追加
 3. **Firestore Database** を作成（ロケーションを選択）
-4. **Authentication** を有効化（使う場合）
+4. **Authentication** を有効化（ログイン機能を使う場合は必須）
+   - **Authentication** → **ログイン方法** → **メール/パスワード** を **有効** にする
+   - **Google** も **有効** にする（Google ログイン用）
+   - **Authentication** → **設定** → **承認済みドメイン** に `localhost` があるか確認
+   - 有効にしないと `auth/configuration-not-found` エラーになります
 
 ### 2. Web アプリを登録して設定値を取得
 
@@ -98,13 +102,41 @@ docker compose up --build
 
 ---
 
+## Firestore フィールド（進捗・教材）
+
+### `texts`
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `text_name` | string | 教材名 |
+| `start_page` | number | 教材の先頭ページ |
+| `end_page` | number | 教材の末尾ページ |
+| `text_type`, `user_id` | string | 任意 |
+
+### `progresses`
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `text_id` | string | 教材ドキュメント ID |
+| `page_start`, `page_end` | number | その記録で学習したページ範囲（両端込み） |
+| `labels` | array of string | 任意（例: `["微分","復習"]`） |
+| `updated_at` | timestamp | 更新時刻 |
+
+**廃止**: `text_range`（texts）、`progress_page`（progresses）は使いません。既存ドキュメントに残っていてもアプリ側では無視します。
+
+---
+
 ## トラブルシュート
 
 | 症状 | 対処 |
 |------|------|
-| 教材が取得できない | Console / Emulator に `texts` があるか確認（`text_name`, `text_range` 等） |
+| 教材が取得できない | Console / Emulator に `texts` があるか確認（`text_name`, `start_page`, `end_page`） |
 | 本番なのに Emulator に繋がる | `REACT_APP_USE_FIREBASE_EMULATOR=false`、Emulator ホストを削除 |
 | 変更が反映されない | `docker compose up --build` で web を再ビルド |
 | Permission denied | Firestore Rules を確認（開発中はテストモード or ルール緩和） |
+| `auth/configuration-not-found` | **Authentication** → **ログイン方法** で **メール/パスワード** と **Google** を有効化 |
+| Google ログインで `unauthorized-domain` | **Authentication** → **設定** → **承認済みドメイン** に `localhost` を追加 |
+| `missing initial state` | （旧）リダイレクト認証で発生しやすい。本アプリは **Google はポップアップのみ**。通常ウィンドウ・ポップアップ許可・Cookie 許可を確認 |
+| メールが `fuharu` のように通らない | `name@example.com` 形式で入力（`@` とドメインが必要） |
 
 `.env` は **Git にコミットしない**（`.gitignore` 済み）。
