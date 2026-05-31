@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createText } from "../services/textCreateService";
-// import { auth } from "../lib/firebase";(認証機能マージ後に追加)
-import './text_regist.css';
+import { auth } from "../lib/firebase";
+import "./text_regist.css";
 
 export default function MaterialRegistration() {
   const [materialTitle, setMaterialTitle] = useState('');
@@ -19,8 +19,8 @@ export default function MaterialRegistration() {
       text_name: materialTitle,
       text_type: materialType,
       start_page: materialType === 'video' ? null : Number(startPage),
-      end_page: materialType === 'video' ? null : Number(endPage)
-      // user_id: auth.currentUser.uid(認証機能マージ後に追加),
+      end_page: materialType === 'video' ? null : Number(endPage),
+      user_id: auth.currentUser.uid
     };
 
     if (Number(startPage) > Number(endPage)) {
@@ -43,10 +43,11 @@ export default function MaterialRegistration() {
   };
 
   return (
-    <div className="container">
-      <h2 className="title">教材登録</h2>
-      <p className="subtitle">学習する教材の情報を登録します。</p>
-
+    <div className="page">
+      <header className='page-header'>
+        <h2 className="page-title">教材登録</h2>
+        <p className="page-description">学習する教材の情報を登録します。</p>
+      </header>
       <form onSubmit={handleSubmit} className="card">
 
         {/* 教材名 */}

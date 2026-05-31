@@ -6,16 +6,14 @@
   color: #2d3748;
 }
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 8px;
+.page-header {
+  margin-bottom: 1.5rem;
 }
 
-.subtitle {
-  font-size: 14px;
-  color: #718096;
-  margin-bottom: 24px;
+.page-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 700;
 }
 
 .card {
