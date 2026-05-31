@@ -1,40 +1,6 @@
-import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { fetchTexts } from "../services/textService";
 
 export const ProgressCard = ({ value, textName, textTag }) => {
-  const [list, setList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadTexts = async () => {
-      try {
-        const data = await fetchTexts();
-        if (isMounted) {
-          setList(data);
-        }
-      } catch (fetchError) {
-        console.error(fetchError);
-        if (isMounted) {
-          setError(fetchError);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadTexts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   return (
     <SContainer>
       <STextName>{textName}</STextName>
@@ -78,16 +44,6 @@ export const ProgressCard = ({ value, textName, textTag }) => {
           </span>
         </div>
       </SProgressBar>
-
-      <div>
-        {isLoading ? (
-          <div>Loading texts...</div>
-        ) : error ? (
-          <div>テキストの読み込みに失敗しました。</div>
-        ) : (
-          <pre>{JSON.stringify(list, null, 2)}</pre>
-        )}
-      </div>
     </SContainer>
   );
 };
