@@ -17,7 +17,7 @@ import LoginPage from "./pages/LoginPage";
 
 import ProgressRecordPage from "./pages/ProgressRecordPage";
 
-import ProgressDisplayPage from "./pages/progress_display";
+import ProgressDisplayPage from "./pages/progress_display_slider";
 
 import "./App.css";
 
@@ -48,6 +48,14 @@ function AppNav() {
       {user && (
         <>
           <NavLink
+            to="/progress/display"
+            className={({ isActive }) =>
+              `app-nav__link${isActive ? " app-nav__link--active" : ""}`
+            }
+          >
+            進捗表示
+          </NavLink >
+          <NavLink
             to="/text/register"
             className={({ isActive }) =>
               `app-nav__link${isActive ? " app-nav__link--active" : ""}`
@@ -63,14 +71,6 @@ function AppNav() {
           >
             進捗記録
           </NavLink>
-          <NavLink
-            to="/progress/display"
-            className={({ isActive }) =>
-              `app-nav__link${isActive ? " app-nav__link--active" : ""}`
-            }
-          >
-            進捗表示
-          </NavLink >
         </>
       )
       }
