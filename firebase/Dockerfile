@@ -13,4 +13,4 @@ COPY firebase.json .firebaserc ./
 
 EXPOSE 4000 8080 9099
 
-CMD ["firebase", "emulators:start", "--only", "auth,firestore", "--project", "demo-hakkason"]
+CMD ["sh", "-lc", "firebase emulators:start --only auth,firestore --project ${FIREBASE_PROJECT_ID:-demo-hakkason}"]

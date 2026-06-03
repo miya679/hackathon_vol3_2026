@@ -2,11 +2,15 @@ import { initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 
-const projectId =
-  process.env.REACT_APP_FIREBASE_PROJECT_ID ?? "demo-hakkason";
+const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID ?? "demo-hakkason";
 
+const authEmulatorHost = process.env.REACT_APP_FIREBASE_AUTH_EMULATOR_HOST;
+const firestoreEmulatorHost = process.env.REACT_APP_FIRESTORE_EMULATOR_HOST;
+
+// Prefer explicit flag, but fall back to presence of emulator hosts so that
+// containers or mounts that set hosts (but not the flag) still connect.
 const useEmulator =
-  process.env.REACT_APP_USE_FIREBASE_EMULATOR === "true";
+  process.env.REACT_APP_USE_FIREBASE_EMULATOR === "true" || !!authEmulatorHost || !!firestoreEmulatorHost;
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY ?? "demo-api-key",
@@ -31,10 +35,6 @@ export const db = getFirestore(app);
 export const firebaseMode = useEmulator ? "emulator" : "cloud";
 
 if (useEmulator) {
-  const authEmulatorHost = process.env.REACT_APP_FIREBASE_AUTH_EMULATOR_HOST;
-  const firestoreEmulatorHost =
-    process.env.REACT_APP_FIRESTORE_EMULATOR_HOST;
-
   if (authEmulatorHost) {
     connectAuthEmulator(auth, `http://${authEmulatorHost}`, {
       disableWarnings: true,
