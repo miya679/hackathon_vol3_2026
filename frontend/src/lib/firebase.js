@@ -10,7 +10,9 @@ const firestoreEmulatorHost = process.env.REACT_APP_FIRESTORE_EMULATOR_HOST;
 // Prefer explicit flag, but fall back to presence of emulator hosts so that
 // containers or mounts that set hosts (but not the flag) still connect.
 const useEmulator =
-  process.env.REACT_APP_USE_FIREBASE_EMULATOR === "true" || !!authEmulatorHost || !!firestoreEmulatorHost;
+  process.env.REACT_APP_USE_FIREBASE_EMULATOR === "true" ||
+  !!authEmulatorHost ||
+  !!firestoreEmulatorHost;
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY ?? "demo-api-key",
@@ -19,12 +21,10 @@ const firebaseConfig = {
     `${projectId}.firebaseapp.com`,
   projectId,
   storageBucket:
-    process.env.REACT_APP_FIREBASE_STORAGE_BUCKET ??
-    `${projectId}.appspot.com`,
+    process.env.REACT_APP_FIREBASE_STORAGE_BUCKET ?? `${projectId}.appspot.com`,
   messagingSenderId:
     process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID ?? "000000000000",
-  appId:
-    process.env.REACT_APP_FIREBASE_APP_ID ?? "1:000000000000:web:demo",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID ?? "1:000000000000:web:demo",
 };
 
 const app = initializeApp(firebaseConfig);
