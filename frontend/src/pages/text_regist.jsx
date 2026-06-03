@@ -31,16 +31,14 @@ export default function MaterialRegistration() {
     try {
       await createText(registrationData);
       console.log('登録データ:', registrationData);
-      alert('教材を登録しました');
+      setMessage("登録が完了しました！");
+      setMaterialTitle('');
+      setStartPage('');
+      setEndPage('');
     } catch (error) {
-      alert('登録に失敗しました');
+      setMessage('登録に失敗しました');
     }
-
-
-    setMaterialTitle('');
-    setStartPage('');
-    setEndPage('');
-  };
+  }
 
   return (
     <div className="page">
@@ -111,6 +109,14 @@ export default function MaterialRegistration() {
             </div>
           </div>
         )}
+
+        <div onClick={() => setMessage('')}>
+          {message && (
+            <div className="message-box">
+              {message}
+            </div>
+          )}
+        </div>
 
         <button type="submit" className="button"
           disabled={
