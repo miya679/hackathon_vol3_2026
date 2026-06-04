@@ -17,7 +17,9 @@ import LoginPage from "./pages/LoginPage";
 
 import ProgressRecordPage from "./pages/ProgressRecordPage";
 
-import ProgressDisplayPage from "./pages/progress_display_slider";
+// import ProgressDisplayPage from "./pages/progress_display_slider";
+
+import ProgressDisplayPage from "./pages/progress_display";
 
 import "./App.css";
 
